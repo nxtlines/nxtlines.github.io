@@ -1,0 +1,260 @@
+/* Janus's page, on the web: the app's own tokens (constants/janus-colors.ts) — cream paper and soft
+   black ink, the same page at night when the phone is dark — Fraunces for the headings only, the
+   system's own font for reading, and ink blue for one thing: what can be followed. Phone first:
+   the gutter and the measure are the app's, and every heading fits one line on the narrowest phone
+   (375, less two gutters: 327) — its size taken from the app's measured Fraunces widths. */
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: #fdfcf7;
+  --text: #1f1e22;
+  --text-muted: #86847e;
+  --hairline: #d7d4cb;
+  --accent: #1f5f95;
+  --gutter: 24px;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1f1e22;
+    --text: #fdfcf7;
+    --text-muted: #86847e;
+    --hairline: #3e3c39;
+    --accent: #4f86b8;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: max(16px, env(safe-area-inset-top)) max(var(--gutter), env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+main,
+.top,
+.foot {
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+main {
+  flex: 1;
+}
+
+/* What can be followed — and only it — in ink blue. */
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* The page you're on is not somewhere to go. */
+a[aria-current='page'] {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+h1,
+h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* The logo, at the top of a Janus page: back to Janus's own page. The mark in ink blue and the
+   name in ink, as the app's logo — a link without a link's underline. 24: the mark as tall as the
+   name, a quarter of it (6) apart. */
+.top {
+  padding: 8px 0 0;
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  margin: -8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.home span {
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.mark {
+  display: block;
+  fill: var(--accent);
+}
+
+.top .mark {
+  width: 24px;
+  height: 24px;
+}
+
+/* A page to read: the policy, the terms, support. */
+.document {
+  padding: 24px 0 32px;
+}
+
+/* The page's title — the app's serifTitle, 28: fits 327 up to 34. */
+.document h1 {
+  font-size: 28px;
+  line-height: 36px;
+  margin: 0 0 8px;
+}
+
+/* Every section's heading — 20: the longest ("Not medical or professional advice") fits 327 up to 20.2. */
+.document h2 {
+  font-size: 20px;
+  line-height: 28px;
+  margin: 32px 0 8px;
+}
+
+/* A question on the support page: the app's body weight, in the reading font. */
+.document h3 {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  margin: 24px 0 4px;
+}
+
+.document p {
+  margin: 0 0 16px;
+}
+
+.document .effective {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.document ul {
+  margin: 0 0 16px;
+  padding-left: 1.25em;
+}
+
+.document li {
+  margin: 0 0 8px;
+}
+
+.document li::marker {
+  color: var(--text-muted);
+}
+
+/* The foot: the three pages, and who made them. */
+.foot {
+  border-top: 1px solid var(--hairline);
+  padding-top: 16px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.foot nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-bottom: 8px;
+}
+
+.foot p {
+  margin: 0;
+}
+
+/* The two small pages, in the middle of the screen. */
+.center main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 48px 0;
+}
+
+.center .foot {
+  border-top: 0;
+  text-align: center;
+}
+
+/* Janus's own page: the wordmark as the app's opening lands it — the mark as tall as the name, a
+   quarter of it apart — and under it the line, in the serif at 22, grey. */
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: 0;
+}
+
+.wordmark .mark {
+  width: 40px;
+  height: 40px;
+}
+
+.tagline {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 28px;
+  color: var(--text-muted);
+  margin: 12px 0 40px;
+}
+
+.janus nav {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 17px;
+}
+
+/* The root: the studio's name, and the way to Janus. */
+.studio h1 {
+  font-size: 40px;
+  line-height: 48px;
+  margin: 0 0 16px;
+}
+
+.studio p {
+  margin: 0;
+}
