@@ -2,7 +2,9 @@
    black ink, the same page at night when the phone is dark — Fraunces for the headings only, the
    system's own font for reading, and ink blue for one thing: what can be followed. Phone first:
    the gutter and the measure are the app's, and every heading fits one line on the narrowest phone
-   (375, less two gutters: 327) — its size taken from the app's measured Fraunces widths. */
+   (375, less two gutters: 327) — its size taken from the app's measured Fraunces widths. Every
+   text is at least 4.5:1 on its page, by day and at night (WCAG AA; tools/check.mjs measures it):
+   the grey is the app's textMutedLegible, the night blue its accent. */
 
 @font-face {
   font-family: 'Fraunces';
@@ -15,7 +17,7 @@
 :root {
   --background: #fdfcf7;
   --text: #1f1e22;
-  --text-muted: #86847e;
+  --text-muted: #767470;
   --hairline: #d7d4cb;
   --accent: #1f5f95;
   --gutter: 24px;
@@ -28,7 +30,7 @@
   :root {
     --background: #1f1e22;
     --text: #fdfcf7;
-    --text-muted: #86847e;
+    --text-muted: #888680;
     --hairline: #3e3c39;
     --accent: #548aba;
   }

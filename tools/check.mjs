@@ -6,6 +6,8 @@
 //   3. No script of any kind, no frames, no forms; every page carries the Content-Security-Policy
 //      that lets the browser load nothing but this site's own files, and nothing as a script.
 //   4. Every link inside the site leads to a file that's there.
+//   5. Every text is at least 4.5:1 on its page, by day and at night (WCAG AA), measured from the
+//      stylesheet's own colors.
 // And lists every URL anywhere in the repository, with where it is.
 
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
@@ -85,8 +87,32 @@ for (const page of pages) {
   }
 }
 
+// 5. Contrast, by WCAG's measure (relative luminance), for the colors text is set in.
+const linear = (channel) => (channel / 255 <= 0.04045 ? channel / 255 / 12.92 : ((channel / 255 + 0.055) / 1.055) ** 2.4);
+const luminance = (hex) => {
+  const [r, g, b] = [1, 3, 5].map((index) => linear(parseInt(hex.slice(index, index + 2), 16)));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const contrast = (a, b) => {
+  const [lighter, darker] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (lighter + 0.05) / (darker + 0.05);
+};
+const css = read('style.css');
+const colorsIn = (block) => Object.fromEntries([...block.matchAll(/--([a-z-]+):\s*(#[0-9a-f]{6});/gi)].map(([, name, value]) => [name, value]));
+const day = colorsIn(css.match(/:root \{([\s\S]*?)\n\}/)[1]);
+const night = { ...day, ...colorsIn(css.match(/@media \(prefers-color-scheme: dark\) \{\s*:root \{([\s\S]*?)\}/)[1]) };
+const ratios = [];
+for (const [mode, colors] of [['light', day], ['dark', night]]) {
+  for (const name of ['text', 'text-muted', 'accent']) {
+    const ratio = contrast(colors[name], colors.background);
+    ratios.push(`${mode} ${name} ${colors[name]} ${ratio.toFixed(2)}:1`);
+    if (ratio < 4.5) fail(`${mode}: --${name} ${colors[name]} is ${ratio.toFixed(2)}:1 on ${colors.background}, under 4.5`);
+  }
+}
+
 console.log(`✓ ${pages.length} pages, the stylesheet and the favicon: no URL to another site; every reference this site's own or mailto:`);
 console.log(`✓ no script, frame, form or import anywhere; the Content-Security-Policy on every page; every internal link leads somewhere`);
+console.log(`✓ contrast, every text at least 4.5:1 on its page: ${ratios.join(' · ')}`);
 
 // Every URL anywhere in the repository, for the record — the license's, and the font's own name
 // table (read as UTF-16 too, the way a font keeps its names). None is ever fetched.
