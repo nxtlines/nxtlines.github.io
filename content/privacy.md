@@ -2,7 +2,7 @@
 
 Effective: October 7, 2026
 
-Janus is a habit tracker made by nxtlines. In this policy, "nxtlines", "we" and "us" mean the developer of Janus, shown as its seller on the App Store. This policy explains what happens to your information when you use Janus.
+Janus is a habit tracker made by nxtlines. In this policy, "nxtlines" (also written "(nxt)lines"), "we" and "us" mean the developer of Janus, shown as its seller on the App Store. This policy explains what happens to your information when you use Janus.
 
 ## The short version
 

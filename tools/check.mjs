@@ -53,8 +53,12 @@ for (const page of ['janus/privacy/index.html', 'janus/terms/index.html']) {
   if (!read(page).includes('<p class="effective">Effective: October 7, 2026</p>')) fail(`${page} lacks its effective date`);
 }
 if (pages.some((page) => read(page).includes('[launch date]'))) fail('a page still says [launch date]');
-// The one change to the policy's words since it was written, approved: the children's heading.
+// The changes to the words since they were written, approved: the children's heading, and the
+// studio's name as it's also written, in the definition of "nxtlines" in both.
 if (!read('janus/privacy/index.html').includes("<h2>Children's privacy</h2>")) fail('the privacy policy lacks its heading "Children\'s privacy"');
+for (const page of ['janus/privacy/index.html', 'janus/terms/index.html']) {
+  if (!read(page).includes('&quot;nxtlines&quot; (also written &quot;(nxt)lines&quot;), &quot;we&quot; and &quot;us&quot; mean')) fail(`${page} lacks "(nxt)lines" in its definition of "nxtlines"`);
+}
 for (const line of ['Questions, bugs, or ideas? Let us know.', 'href="mailto:nxtlines.support@gmail.com"']) {
   if (!read('janus/support/index.html').includes(line)) fail(`the support page lacks ${line}`);
 }
