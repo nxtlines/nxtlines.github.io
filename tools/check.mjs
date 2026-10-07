@@ -1,6 +1,8 @@
 // Proves what the site promises, from its own files: node tools/check.mjs
 //   1. The policy and terms are word for word — each page's text, read back out of its HTML, is
-//      exactly its Markdown's text (and support's own lines are there as written).
+//      exactly its Markdown's text (and support's own lines are there as written), its curly
+//      quotes read as the straight ones written. No page shows a straight quote, and every quoted
+//      phrase is kept whole on one line.
 //   2. Nothing is loaded from another site: no URL to anywhere else in any page, the stylesheet or
 //      the favicon; every link, image, font and stylesheet is this site's own (or mailto:).
 //   3. No script of any kind, no frames, no forms; every page carries the Content-Security-Policy
@@ -29,10 +31,13 @@ const files = listFiles();
 const pages = files.filter((file) => file.endsWith('.html'));
 const read = (file) => readFileSync(path.join(ROOT, file), 'utf8');
 
-// 1. Word for word.
+// 1. Word for word — read as written: the curly quotes a page shows (“ ” ’) as the straight ones
+// in the Markdown, and a span or link inside a line taken away whole, not read as a space.
 const unescape = (text) => text.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 const words = (text) => text.split(/\s+/).filter(Boolean).join(' ');
-const pageText = (file) => words(unescape(read(file).match(/<main[^>]*>([\s\S]*)<\/main>/)[1].replace(/<[^>]+>/g, ' ')));
+const straighten = (text) => text.replace(/[“”]/g, '"').replace(/’/g, "'");
+const shownText = (html) => unescape(html.replace(/<\/?(?:span|a)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' '));
+const pageText = (file) => words(straighten(shownText(read(file).match(/<main[^>]*>([\s\S]*)<\/main>/)[1])));
 const markdownText = (file) => words(read(file).replace(/^#{1,3} /gm, '').replace(/^- /gm, ''));
 for (const [content, page] of [
   ['content/privacy.md', 'janus/privacy/index.html'],
@@ -55,13 +60,30 @@ for (const page of ['janus/privacy/index.html', 'janus/terms/index.html']) {
 if (pages.some((page) => read(page).includes('[launch date]'))) fail('a page still says [launch date]');
 // The changes to the words since they were written, approved: the children's heading, and the
 // studio's name as it's also written, in the definition of "nxtlines" in both.
-if (!read('janus/privacy/index.html').includes("<h2>Children's privacy</h2>")) fail('the privacy policy lacks its heading "Children\'s privacy"');
+if (!straighten(read('janus/privacy/index.html')).includes("<h2>Children's privacy</h2>")) fail('the privacy policy lacks its heading "Children\'s privacy"');
 for (const page of ['janus/privacy/index.html', 'janus/terms/index.html']) {
-  if (!read(page).includes('&quot;nxtlines&quot; (also written &quot;(nxt)lines&quot;), &quot;we&quot; and &quot;us&quot; mean')) fail(`${page} lacks "(nxt)lines" in its definition of "nxtlines"`);
+  if (!pageText(page).includes('"nxtlines" (also written "(nxt)lines"), "we" and "us" mean')) fail(`${page} lacks "(nxt)lines" in its definition of "nxtlines"`);
 }
 for (const line of ['Questions, bugs, or ideas? Let us know.', 'href="mailto:nxtlines.support@gmail.com"']) {
   if (!read('janus/support/index.html').includes(line)) fail(`the support page lacks ${line}`);
 }
+// Typography, on every page: what it shows (its title, and all of its body) has no straight quote,
+// and each phrase in quotes is in a .quoted span, which style.css keeps on one line.
+let quotedPhrases = 0;
+let apostrophes = 0;
+for (const page of pages) {
+  const html = read(page);
+  const shown = shownText(`${html.match(/<title>([\s\S]*?)<\/title>/)[1]} ${html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1]}`);
+  const straight = shown.match(/.{0,20}["'].{0,20}/g);
+  if (straight) fail(`${page} shows a straight quote: ${straight.map((at) => `…${at}…`).join(', ')}`);
+  const phrases = shown.match(/“[^”]*”/g) ?? [];
+  const kept = [...html.matchAll(/<span class="quoted">(“[^”<]*”)<\/span>/g)].map(([, phrase]) => unescape(phrase));
+  if (phrases.join('|') !== kept.join('|')) fail(`${page}: quoted ${phrases.join(' ')}, but kept whole only ${kept.join(' ')}`);
+  quotedPhrases += phrases.length;
+  apostrophes += (shown.match(/’/g) ?? []).length;
+}
+if (!/\.quoted \{\s*white-space: nowrap;\s*\}/.test(read('style.css'))) fail('style.css lacks .quoted { white-space: nowrap; }');
+console.log(`✓ typography: no page shows a straight quote; ${quotedPhrases} phrases in “ ”, each kept whole on one line; ${apostrophes} apostrophes as ’`);
 
 // 2 and 3. What the browser loads.
 const URL_PATTERN = /\b[a-z][a-z0-9+.-]*:\/\/[^\s"'<>)]*/gi;

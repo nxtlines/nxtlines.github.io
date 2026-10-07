@@ -22,6 +22,19 @@ const escape = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
 // The support address, wherever it's written, is a link to write to it — its words unchanged.
 const linkEmail = (html) => html.replaceAll(SUPPORT_EMAIL, `<a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>`);
 
+// Typography, for what's shown — the words as written: the straight quotes as curly ones, “ ” for
+// a quoted phrase and ’ for the apostrophe (every ' in these pages is one: a quote that opens with
+// one stops the build, as does a " left without its pair).
+function curl(text) {
+  if (/(^|[\s(“])'/.test(text)) throw new Error(`a single quote that opens, not an apostrophe: ${text}`);
+  const curled = text.replace(/"([^"]+)"/g, '“$1”').replace(/'/g, '’');
+  if (curled.includes('"')) throw new Error(`a " without its pair: ${text}`);
+  return curled;
+}
+// The text of a page, shown: curled, escaped, and every quoted phrase — its quotes with it — kept
+// whole on one line (.quoted in style.css), so a quote never stands alone at a line's end.
+const textToHtml = (text) => escape(curl(text)).replace(/“[^”]+”/g, '<span class="quoted">$&</span>');
+
 // The Markdown these pages use, and only it: # to ### headings, "- " lists, and paragraphs, whose
 // own line breaks are kept (the contact lines). Anything else is a paragraph, as written.
 function markdownToHtml(markdown) {
@@ -32,12 +45,12 @@ function markdownToHtml(markdown) {
       const heading = block.match(/^(#{1,3}) (.*)$/);
       if (heading && lines.length === 1) {
         const level = heading[1].length;
-        return `<h${level}>${escape(heading[2])}</h${level}>`;
+        return `<h${level}>${textToHtml(heading[2])}</h${level}>`;
       }
       if (lines.every((line) => line.startsWith('- '))) {
-        return `<ul>\n${lines.map((line) => `  <li>${linkEmail(escape(line.slice(2)))}</li>`).join('\n')}\n</ul>`;
+        return `<ul>\n${lines.map((line) => `  <li>${linkEmail(textToHtml(line.slice(2)))}</li>`).join('\n')}\n</ul>`;
       }
-      const html = linkEmail(lines.map(escape).join('<br>\n'));
+      const html = linkEmail(lines.map(textToHtml).join('<br>\n'));
       return /^Effective: /.test(block) ? `<p class="effective">${html}</p>` : `<p>${html}</p>`;
     })
     .join('\n');
@@ -57,8 +70,8 @@ function page({ title, description, body, className = '' }) {
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#FDFCF7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1F1E22" media="(prefers-color-scheme: dark)">
-  <title>${escape(title)}</title>
-  <meta name="description" content="${escape(description)}">
+  <title>${escape(curl(title))}</title>
+  <meta name="description" content="${escape(curl(description))}">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/style.css">
