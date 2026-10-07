@@ -165,5 +165,5 @@ write('janus/support/index.html', janusDocument({ title: 'Janus Support', descri
 // The favicon: the mark in ink blue, lighter on a dark tab.
 write(
   'favicon.svg',
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><style>path{fill:#1F5F95}@media (prefers-color-scheme:dark){path{fill:#4F86B8}}</style><path d="${MARK_PATH}"/></svg>\n`
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><style>path{fill:#1F5F95}@media (prefers-color-scheme:dark){path{fill:#548ABA}}</style><path d="${MARK_PATH}"/></svg>\n`
 );
