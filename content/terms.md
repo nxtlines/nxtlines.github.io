@@ -1,6 +1,6 @@
 # Janus Terms of Use
 
-Effective: October 7, 2026
+Effective: October 8, 2026
 
 These Terms are an agreement between you and nxtlines, the maker of Janus. In these Terms, "nxtlines" (also written "(nxt)lines"), "we" and "us" mean the developer of Janus, shown as its seller on the App Store.
 

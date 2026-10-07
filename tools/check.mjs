@@ -50,7 +50,7 @@ for (const [content, page] of [
 }
 // The policy and terms in effect from launch — no placeholder left.
 for (const page of ['janus/privacy/index.html', 'janus/terms/index.html']) {
-  if (!read(page).includes('<p class="effective">Effective: October 7, 2026</p>')) fail(`${page} lacks its effective date`);
+  if (!read(page).includes('<p class="effective">Effective: October 8, 2026</p>')) fail(`${page} lacks its effective date`);
 }
 if (pages.some((page) => read(page).includes('[launch date]'))) fail('a page still says [launch date]');
 // The changes to the words since they were written, approved: the children's heading, and the
